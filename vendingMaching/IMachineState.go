@@ -1,4 +1,4 @@
-package States
+package vendingMaching
 
 type State interface {
 	SelectProduct(sku int)
