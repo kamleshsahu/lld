@@ -25,7 +25,7 @@ func (s *PaymentState) InsertCoin(coin int) {
 }
 
 func (s *PaymentState) SelectProduct(sku int) {
-	s.machine.SetState(GetSelectProductState(s.machine))
+	s.machine.SetState(s.machine.States[Machine.SelectProductState])
 	s.machine.SelectProduct(sku)
 }
 
