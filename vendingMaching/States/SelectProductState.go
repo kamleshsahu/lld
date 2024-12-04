@@ -21,7 +21,7 @@ func (i *SelectProductState) InsertCoin(coin int) {
 func (i *SelectProductState) SelectProduct(sku int) {
 	if product, found := i.machine.Inventory[sku]; found {
 		i.machine.SelectedProduct = &product
-		i.machine.State = getPaymentState(i.machine)
+		i.machine.SetState(i.machine.States[Machine.PaymentState])
 		fmt.Printf("%s selected\n", product.Name)
 		return
 	}
