@@ -1,6 +1,6 @@
 package logger
 
 type ILogger interface {
-	Log(level int, s string)
-	Next(level int)
+	Log(level LogLevel, s string)
+	Next(iLogger *ILogger)
 }

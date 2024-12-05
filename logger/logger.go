@@ -1,41 +1,38 @@
 package logger
 
+type LogLevel int
+
 const (
-	INFO  = 1
-	DEBUG = 2
-	ERROR = 3
-	FATAL = 4
+	DEBUG LogLevel = 1
+	INFO  LogLevel = 2
+	ERROR LogLevel = 3
+	FATAL LogLevel = 4
 )
 
-type Logger interface {
-	Info(message string)
-	Debug(message string)
-	Error(message string)
-	Fatal(message string)
+func (l LogLevel) String() string {
+	return [...]string{"", "DEBUG", "INFO", "ERROR", "FATAL"}[l]
 }
 
-type logger struct {
+type Logger struct {
+	LoggerType map[LogLevel]ILogger
 }
 
-func (l *logger) Info(message string) {
-
+func GetLogger() Logger {
+	return Logger{}
 }
 
-func (l *logger) Debug(message string) {
-	//TODO implement me
-	panic("implement me")
+func (l *Logger) Info(s string) {
+	l.LoggerType[DEBUG].Log(INFO, s)
 }
 
-func (l *logger) Error(message string) {
-	//TODO implement me
-	panic("implement me")
+func (l *Logger) Debug(s string) {
+	l.LoggerType[DEBUG].Log(DEBUG, s)
 }
 
-func (l *logger) Fatal(message string) {
-	//TODO implement me
-	panic("implement me")
+func (l *Logger) Error(s string) {
+	l.LoggerType[DEBUG].Log(ERROR, s)
 }
 
-func New() Logger {
-	return &logger{}
+func (l *Logger) Fatal(s string) {
+	l.LoggerType[DEBUG].Log(FATAL, s)
 }
