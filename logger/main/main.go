@@ -21,6 +21,6 @@ func main() {
 	}
 
 	mainLogger.Info("printing info log")
-	mainLogger.Debug("printing info debug")
-	mainLogger.Error("printing info error")
+	mainLogger.Debug("printing debug log")
+	mainLogger.Error("printing error log")
 }

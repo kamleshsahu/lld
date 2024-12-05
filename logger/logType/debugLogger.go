@@ -11,7 +11,7 @@ type debugLogger struct {
 
 func (i *debugLogger) Log(level logger.LogLevel, s string) {
 	if level >= logger.DEBUG {
-		fmt.Println(logger.DEBUG.String(), s)
+		fmt.Printf("%s: %s\n", logger.DEBUG.String(), s)
 	}
 	if i.next != nil {
 		(*i.next).Log(level, s)

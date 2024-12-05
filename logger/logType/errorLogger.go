@@ -11,7 +11,7 @@ type errorLogger struct {
 
 func (i *errorLogger) Log(level logger.LogLevel, s string) {
 	if level >= logger.ERROR {
-		fmt.Println(logger.ERROR.String(), s)
+		fmt.Printf("%s: %s\n", logger.ERROR.String(), s)
 	}
 
 	if i.next != nil {

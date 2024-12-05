@@ -11,7 +11,7 @@ type infoLogger struct {
 
 func (i *infoLogger) Log(level logger.LogLevel, s string) {
 	if level >= logger.INFO {
-		fmt.Println(logger.INFO.String(), s)
+		fmt.Printf("%s: %s\n", logger.INFO.String(), s)
 	}
 	if i.next != nil {
 		(*i.next).Log(level, s)
