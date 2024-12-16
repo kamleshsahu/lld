@@ -3,6 +3,7 @@ package fireStrategy
 import (
 	"lld/battleship/entity"
 	"math/rand"
+	"sync"
 )
 
 type RandomFireStrategy struct {
@@ -27,6 +28,12 @@ func (r *RandomFireStrategy) GetFireLocation(playerID int) (*entity.Cell, error)
 	return &ans, nil
 }
 
+var singleton sync.Once
+var randomFireStrategy *RandomFireStrategy
+
 func NewRandomFireStrategy() FireStrategy {
-	return &RandomFireStrategy{}
+	singleton.Do(func() {
+		randomFireStrategy = &RandomFireStrategy{}
+	})
+	return randomFireStrategy
 }

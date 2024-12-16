@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"lld/battleship/entity"
 	"lld/battleship/fireStrategy"
+	"sync"
 	"time"
 )
 
@@ -114,6 +115,12 @@ func (game *Game) mapPlayerToField() {
 	}
 }
 
+var singleton sync.Once
+var gameInstance *Game
+
 func NewGame(strategy fireStrategy.FireStrategy) IGame {
-	return &Game{FireStrategy: strategy}
+	singleton.Do(func() {
+		gameInstance = &Game{FireStrategy: strategy}
+	})
+	return gameInstance
 }
