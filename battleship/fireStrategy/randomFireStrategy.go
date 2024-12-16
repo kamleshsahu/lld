@@ -6,15 +6,15 @@ import (
 )
 
 type RandomFireStrategy struct {
-	players []entity.Field
+	playerFields []entity.Field
 }
 
 func (r *RandomFireStrategy) Init(playerField []entity.Field) {
-	r.players = playerField
+	r.playerFields = playerField
 }
 
 func (r *RandomFireStrategy) GetFireLocation(playerID int) (*entity.Cell, error) {
-	field := r.players[playerID]
+	field := r.playerFields[playerID]
 	size := len(field.Cells)
 	if size == 0 {
 		return nil, entity.ErrNoCellLeft(playerID)
