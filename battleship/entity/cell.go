@@ -17,3 +17,7 @@ func (l *Cell) Copy() Cell {
 func (l *Cell) ToString() string {
 	return fmt.Sprintf("%d#%d", l.X, l.Y)
 }
+
+func (c *Cell) HasShip(location Cell) bool {
+	return c.Ship != nil
+}

@@ -35,6 +35,10 @@ func (game *Game) AddShip(ship *entity.Ship, cell entity.Cell, Size int) error {
 		return errors.New("game has no players")
 	}
 
+	if !game.Board.IsValidCell(cell) {
+		return errors.New("invalid cell")
+	}
+
 	ship.Owner = &game.Players[game.getPlayer(cell)]
 	ship.Owner.ShipCount++
 	ship.Size = Size
@@ -54,6 +58,7 @@ func (game *Game) getPlayer(cell entity.Cell) int {
 }
 
 func (game *Game) StartGame() error {
+	fmt.Printf("Game started\n")
 	fmt.Printf(game.Board.ViewBattleField())
 	for {
 		distroyerId := game.Turn
@@ -81,7 +86,7 @@ func (game *Game) StartGame() error {
 }
 
 func (g *Game) Fire(cell entity.Cell) (*entity.Ship, error) {
-	if !g.Board.HasShip(cell) {
+	if !g.Board.Cells[cell.X][cell.Y].HasShip(cell) {
 		fmt.Printf("no ship found at cell :%s\n", cell.ToString())
 		return nil, nil
 	}

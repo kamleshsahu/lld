@@ -74,11 +74,14 @@ func (b *Board) ViewBattleField() string {
 				bf.WriteString(fmt.Sprintf("%8s", "."))
 			}
 		}
-		bf.WriteString("\n\n")
+		bf.WriteString("\n")
 	}
 	return bf.String()
 }
 
-func (b *Board) HasShip(location Cell) bool {
-	return b.Cells[location.X][location.Y].Ship != nil
+func (b *Board) IsValidCell(cell Cell) bool {
+	if cell.X < 0 || cell.X >= len(b.Cells[0]) || cell.Y < 0 || cell.Y >= len(b.Cells) {
+		return false
+	}
+	return true
 }
