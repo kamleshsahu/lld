@@ -1,7 +1,6 @@
 package game
 
 import (
-	"errors"
 	"fmt"
 	"lld/battleship/entity"
 	"lld/battleship/strategy/divideFieldStrategy"
@@ -20,6 +19,7 @@ type Game struct {
 	eliminationStrategy       eliminationStrategy.IEliminationStrategy
 	divideBattleFieldStrategy divideFieldStrategy.IDivideFieldStrategy
 	targetPlayerStrategy      targetPlayerStrategy.ITargetPlayerStrategy
+	isStarted                 bool
 	turn                      int
 }
 
@@ -38,13 +38,13 @@ func (game *Game) InitGame(N int) error {
 
 func (game *Game) AddShip(id string, size, player1ShipX, player1ShipY, player2ShipX, player2ShipY int) error {
 	if game.board == nil {
-		return errors.New("game has no board")
+		return entity.ERR_GAME_HAS_NO_BOARD
 	}
 	if game.Players == nil {
-		return errors.New("game has no players")
+		return entity.ERR_GAME_HAS_NO_PLAYERS
 	}
 
-	cells := []entity.Cell{*entity.NewCell(player1ShipX, player1ShipY), *entity.NewCell(player2ShipX, player2ShipY)}
+	cells := []*entity.Cell{entity.NewCell(player1ShipX, player1ShipY), entity.NewCell(player2ShipX, player2ShipY)}
 
 	for i := 0; i < len(cells); i++ {
 		_, err := game.board.IsValidLocation(cells[i], size)
@@ -55,7 +55,7 @@ func (game *Game) AddShip(id string, size, player1ShipX, player1ShipY, player2Sh
 
 	for i := 0; i < len(cells); i++ {
 		game.Players[i].ShipCount++
-		ship := entity.NewShip(id, &cells[i], size, game.Players[i])
+		ship := entity.NewShip(id, cells[i], size, game.Players[i])
 		err := game.board.AddShip(ship, cells[i], size)
 		if err != nil {
 			return err
@@ -88,7 +88,7 @@ func (game *Game) StartGame() error {
 		}
 
 		if !game.eliminationStrategy.IsEliminated(targetPlayer) {
-			fmt.Printf("Game Over, %s wins the game\n", currentPlayer.GetName())
+			fmt.Printf("Game Over, %s won the game\n", currentPlayer.GetName())
 			break
 		}
 		time.Sleep(time.Second)

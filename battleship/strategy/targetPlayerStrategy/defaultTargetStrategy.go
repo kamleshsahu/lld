@@ -1,7 +1,6 @@
 package targetPlayerStrategy
 
 import (
-	"errors"
 	"lld/battleship/entity"
 )
 
@@ -10,7 +9,7 @@ type defaultTargetStrategy struct {
 
 func (d defaultTargetStrategy) GetTargetPlayer(currentPlayer *entity.Player, allPlayers []*entity.Player) (*entity.Player, error) {
 	if len(allPlayers) <= 0 {
-		return nil, errors.New("game has less than 2 player")
+		return nil, entity.ERR_GAME_HAS_LESS_THAN_2_PLAYER
 	}
 
 	targetPlayerId := (currentPlayer.Id + 1) % len(allPlayers)

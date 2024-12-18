@@ -1,7 +1,6 @@
 package entity
 
 import (
-	"errors"
 	"fmt"
 	"strings"
 )
@@ -21,7 +20,7 @@ func NewBoard(N int) *Board {
 	return &Board{cells: cells}
 }
 
-func (b *Board) AddShip(ship *Ship, startLocation Cell, size int) error {
+func (b *Board) AddShip(ship *Ship, startLocation *Cell, size int) error {
 	for i := startLocation.X; i < startLocation.X+size; i++ {
 		for j := startLocation.Y; j < startLocation.Y+size; j++ {
 			b.cells[j][i].Ship = ship
@@ -31,18 +30,18 @@ func (b *Board) AddShip(ship *Ship, startLocation Cell, size int) error {
 	return nil
 }
 
-func (b *Board) IsValidLocation(startLocation Cell, size int) (bool, error) {
+func (b *Board) IsValidLocation(startLocation *Cell, size int) (bool, error) {
 	if !b.IsValidCell(startLocation) {
-		return false, errors.New("cell out of boundary")
+		return false, ERR_CELL_OUT_OF_BOUNDARY
 	}
 	owner := b.cells[startLocation.X][startLocation.Y].Owner
 	for i := startLocation.X; i < startLocation.X+size; i++ {
 		for j := startLocation.Y; j < startLocation.Y+size; j++ {
 			if b.cells[i][j].Ship != nil {
-				return false, ErrInvalidCellShip(startLocation, *b.cells[i][j])
+				return false, ErrInvalidCellShip(startLocation, b.cells[i][j])
 			}
 			if b.cells[i][j].Owner != owner {
-				return false, ErrInvalidCellOwner(startLocation, *b.cells[i][j], *b.cells[i][j].Owner)
+				return false, ErrInvalidCellOwner(startLocation, b.cells[i][j], b.cells[i][j].Owner)
 			}
 		}
 	}
@@ -52,7 +51,7 @@ func (b *Board) IsValidLocation(startLocation Cell, size int) (bool, error) {
 func (b *Board) RemoveShip(cell *Cell) (*Ship, error) {
 	cell = b.GetCells()[cell.X][cell.Y]
 	if !cell.HasShip() {
-		return nil, ErrNoShipPresentInCell(*cell)
+		return nil, ErrNoShipPresentInCell(cell)
 	}
 	ship := cell.Ship
 	startLocation := ship.Location
@@ -81,7 +80,7 @@ func (b *Board) ViewBattleField() string {
 	return bf.String()
 }
 
-func (b *Board) IsValidCell(cell Cell) bool {
+func (b *Board) IsValidCell(cell *Cell) bool {
 	if cell.X < 0 || cell.X >= len(b.cells[0]) || cell.Y < 0 || cell.Y >= len(b.cells) {
 		return false
 	}

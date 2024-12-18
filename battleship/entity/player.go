@@ -13,7 +13,7 @@ func (p *Player) AllShipsKilled() bool {
 
 func (p *Player) GetName() string {
 	if p.Name == "" {
-		return string(byte(p.Id + 'A'))
+		return string(byte(p.Id) + 'A')
 	}
 	return p.Name
 }
