@@ -1,37 +1,32 @@
 package main
 
 import (
-	"lld/battleship/entity"
-	"lld/battleship/fireStrategy"
 	"lld/battleship/game"
+	"lld/battleship/strategy/divideFieldStrategy"
+	"lld/battleship/strategy/eliminationStrategy"
+	"lld/battleship/strategy/fireStrategy"
+	"lld/battleship/strategy/targetPlayerStrategy"
 )
 
 func main() {
 	n := 10
 	fireStrategy := fireStrategy.NewRandomFireStrategy()
-	gameService := game.NewGame(fireStrategy)
+	eliminationStrategy := eliminationStrategy.NewDefaultEliminationStrategy()
+	targetPlayerStrategy := targetPlayerStrategy.NewDefaultTargetStrategy()
+	divideField := divideFieldStrategy.NewEqualDivideStrategy()
+	gameService := game.NewGame(fireStrategy, eliminationStrategy, divideField, targetPlayerStrategy)
 
-	players := []entity.Player{{Name: "Kamlesh"}, {Name: "Tikesh"}}
-
-	gameService.InitGame(n, players)
-
-	ship1 := &entity.Ship{Name: "SH1"}
-	err := gameService.AddShip(ship1, entity.Cell{X: 0, Y: 0}, 3)
+	err := gameService.InitGame(n)
 	if err != nil {
 		panic(err)
 	}
-	ship2 := &entity.Ship{Name: "SH2"}
-	err = gameService.AddShip(ship2, entity.Cell{X: 2, Y: 5}, 2)
+
+	err = gameService.AddShip("SH1", 2, 0, 2, 5, 3)
 	if err != nil {
 		panic(err)
 	}
-	ship3 := &entity.Ship{Name: "SH3"}
-	err = gameService.AddShip(ship3, entity.Cell{X: 5, Y: 2}, 3)
-	if err != nil {
-		panic(err)
-	}
-	ship4 := &entity.Ship{Name: "SH4"}
-	err = gameService.AddShip(ship4, entity.Cell{X: 6, Y: 6}, 3)
+
+	err = gameService.AddShip("SH2", 2, 3, 2, 6, 6)
 	if err != nil {
 		panic(err)
 	}

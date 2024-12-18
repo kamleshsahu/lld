@@ -1,6 +1,8 @@
 package entity
 
-import "fmt"
+import (
+	"fmt"
+)
 
 type Cell struct {
 	X     int
@@ -15,9 +17,13 @@ func (l *Cell) Copy() Cell {
 }
 
 func (l *Cell) ToString() string {
-	return fmt.Sprintf("%d#%d", l.X, l.Y)
+	return fmt.Sprintf("(%d,%d)", l.X, l.Y)
 }
 
-func (c *Cell) HasShip(location Cell) bool {
+func (c *Cell) HasShip() bool {
 	return c.Ship != nil
+}
+
+func NewCell(x, y int) *Cell {
+	return &Cell{X: x, Y: y}
 }

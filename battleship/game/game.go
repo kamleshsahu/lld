@@ -4,123 +4,135 @@ import (
 	"errors"
 	"fmt"
 	"lld/battleship/entity"
-	"lld/battleship/fireStrategy"
+	"lld/battleship/strategy/divideFieldStrategy"
+	"lld/battleship/strategy/eliminationStrategy"
+	"lld/battleship/strategy/fireStrategy"
+	"lld/battleship/strategy/targetPlayerStrategy"
+	"lld/battleship/utils"
 	"sync"
 	"time"
 )
 
 type Game struct {
-	Board        *entity.Board
-	Players      []entity.Player
-	FireStrategy fireStrategy.FireStrategy
-	Turn         int
+	board                     *entity.Board
+	Players                   []*entity.Player
+	fireStrategy              fireStrategy.FireStrategy
+	eliminationStrategy       eliminationStrategy.IEliminationStrategy
+	divideBattleFieldStrategy divideFieldStrategy.IDivideFieldStrategy
+	targetPlayerStrategy      targetPlayerStrategy.ITargetPlayerStrategy
+	turn                      int
 }
 
-func (game *Game) InitGame(N int, players []entity.Player) error {
-	game.Board = entity.NewBoard(N)
-	game.Players = players
-	game.mapPlayerToField()
-	playerFields := make([]entity.Field, len(players))
-	for i, player := range players {
-		playerFields[i] = player.Field
+func (game *Game) InitGame(N int) error {
+	game.board = entity.NewBoard(N)
+	game.Players = []*entity.Player{entity.NewPlayer(0), entity.NewPlayer(1)}
+
+	err := game.divideBattleFieldStrategy.Divide(game.board, game.Players)
+	if err != nil {
+		return err
 	}
-	game.FireStrategy.Init(playerFields)
+
+	game.fireStrategy.Init(utils.ClonePlayerFields(game.Players))
 	return nil
 }
 
-func (game *Game) AddShip(ship *entity.Ship, cell entity.Cell, Size int) error {
-	if game.Board == nil {
+func (game *Game) AddShip(id string, size, player1ShipX, player1ShipY, player2ShipX, player2ShipY int) error {
+	if game.board == nil {
 		return errors.New("game has no board")
 	}
 	if game.Players == nil {
 		return errors.New("game has no players")
 	}
 
-	if !game.Board.IsValidCell(cell) {
-		return errors.New("invalid cell")
+	cells := []entity.Cell{*entity.NewCell(player1ShipX, player1ShipY), *entity.NewCell(player2ShipX, player2ShipY)}
+
+	for i := 0; i < len(cells); i++ {
+		_, err := game.board.IsValidLocation(cells[i], size)
+		if err != nil {
+			return err
+		}
 	}
 
-	ship.Owner = &game.Players[game.getPlayer(cell)]
-	ship.Owner.ShipCount++
-	ship.Size = Size
-	ship.Location = cell
-	err := game.Board.AddShip(ship, cell, Size)
-	fmt.Printf(game.Board.ViewBattleField())
-	if err != nil {
-		return err
+	for i := 0; i < len(cells); i++ {
+		game.Players[i].ShipCount++
+		ship := entity.NewShip(id, &cells[i], size, game.Players[i])
+		err := game.board.AddShip(ship, cells[i], size)
+		if err != nil {
+			return err
+		}
 	}
+
+	fmt.Printf(game.board.ViewBattleField())
 	return nil
-}
-
-func (game *Game) getPlayer(cell entity.Cell) int {
-	size := len(game.Board.Cells) / len(game.Players)
-	playerId := cell.X / size
-	return playerId
 }
 
 func (game *Game) StartGame() error {
 	fmt.Printf("Game started\n")
-	fmt.Printf(game.Board.ViewBattleField())
+	fmt.Printf(game.board.ViewBattleField())
 	for {
-		distroyerId := game.Turn
-		targetPlayerId := distroyerId ^ 1
-		cell, err := game.FireStrategy.GetFireLocation(targetPlayerId)
-		if err != nil {
-			return err
-		}
-		fmt.Printf("%s fired at %s\n", game.Players[distroyerId].Name, cell.ToString())
-		_, err = game.Fire(*cell)
+		currentPlayer := game.Players[game.turn]
+		targetPlayer, _ := game.targetPlayerStrategy.GetTargetPlayer(currentPlayer, game.Players)
+		hitPosition, err := game.fireStrategy.GetFireLocation(targetPlayer.Id)
 		if err != nil {
 			return err
 		}
 
-		if !game.Players[targetPlayerId].HasShip() {
-			fmt.Printf("game over, %s wins the game\n", game.Players[distroyerId].Name)
+		destroyedShip, err := game.fire(hitPosition)
+		if err != nil {
+			return err
+		}
+
+		fmt.Println(utils.TurnMessage(currentPlayer.GetName(), targetPlayer.GetName(), hitPosition.ToString(), destroyedShip))
+		if destroyedShip != nil {
+			fmt.Printf(game.board.ViewBattleField())
+		}
+
+		if !game.eliminationStrategy.IsEliminated(targetPlayer) {
+			fmt.Printf("Game Over, %s wins the game\n", currentPlayer.GetName())
 			break
 		}
 		time.Sleep(time.Second)
-		game.Turn++
-		game.Turn = game.Turn % len(game.Players)
+		game.nextturn()
 	}
 
 	return nil
 }
 
-func (g *Game) Fire(cell entity.Cell) (*entity.Ship, error) {
-	if !g.Board.Cells[cell.X][cell.Y].HasShip(cell) {
-		fmt.Printf("no ship found at cell :%s\n", cell.ToString())
-		return nil, nil
-	}
-
-	ship, err := g.Board.RemoveShip(g.Board.Cells[cell.X][cell.Y])
-	if ship != nil {
-		ship.Owner.ShipCount -= 1
-		fmt.Printf("%s's ship distroyed at cell :%s\n", ship.Owner.Name, ship.Location.ToString())
-		fmt.Printf("updated battlefield:\n%s\n", g.Board.ViewBattleField())
-	}
-	return ship, err
+func (game *Game) ViewBattleField() string {
+	return game.board.ViewBattleField()
 }
 
-func (game *Game) mapPlayerToField() {
-	totalFieldSize := len(game.Board.Cells)
-	size := totalFieldSize / len(game.Players)
+func (game *Game) nextturn() {
+	game.turn++
+	game.turn = game.turn % len(game.Players)
+}
 
-	for x := 0; x < totalFieldSize; x++ {
-		playerId := x / size
-		for y := 0; y < totalFieldSize; y++ {
-			game.Board.Cells[x][y].Owner = &game.Players[playerId]
-
-			game.Players[playerId].Field.Cells = append(game.Players[playerId].Field.Cells, game.Board.Cells[x][y])
-		}
+func (g *Game) fire(cell *entity.Cell) (*entity.Ship, error) {
+	if !g.board.HasShip(cell) {
+		return nil, nil
 	}
+	destroyedShip, err := g.board.RemoveShip(cell)
+	if err != nil {
+		return nil, err
+	}
+	destroyedShip.Owner.ShipCount -= 1
+	return destroyedShip, nil
 }
 
 var singleton sync.Once
 var gameInstance *Game
 
-func NewGame(strategy fireStrategy.FireStrategy) IGame {
+func NewGame(fireStrategy fireStrategy.FireStrategy,
+	eliminationStrategy eliminationStrategy.IEliminationStrategy,
+	divide divideFieldStrategy.IDivideFieldStrategy,
+	targetPlayer targetPlayerStrategy.ITargetPlayerStrategy) IGame {
 	singleton.Do(func() {
-		gameInstance = &Game{FireStrategy: strategy}
+		gameInstance = &Game{
+			fireStrategy:              fireStrategy,
+			eliminationStrategy:       eliminationStrategy,
+			divideBattleFieldStrategy: divide,
+			targetPlayerStrategy:      targetPlayer,
+		}
 	})
 	return gameInstance
 }

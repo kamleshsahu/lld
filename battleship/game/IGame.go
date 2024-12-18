@@ -1,9 +1,8 @@
 package game
 
-import "lld/battleship/entity"
-
 type IGame interface {
-	InitGame(N int, players []entity.Player) error
-	AddShip(ship *entity.Ship, location entity.Cell, Size int) error
+	InitGame(N int) error
+	AddShip(id string, size, player1ShipX, player1ShipY, player2ShipX, player2ShipY int) error
 	StartGame() error
+	ViewBattleField() string
 }

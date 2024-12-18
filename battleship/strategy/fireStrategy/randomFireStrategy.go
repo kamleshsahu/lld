@@ -7,18 +7,18 @@ import (
 )
 
 type RandomFireStrategy struct {
-	playerFields []entity.Field
+	playerFields []*entity.Field
 }
 
-func (r *RandomFireStrategy) Init(playerField []entity.Field) {
+func (r *RandomFireStrategy) Init(playerField []*entity.Field) {
 	r.playerFields = playerField
 }
 
-func (r *RandomFireStrategy) GetFireLocation(playerID int) (*entity.Cell, error) {
-	field := r.playerFields[playerID]
+func (r *RandomFireStrategy) GetFireLocation(targetPlayerId int) (*entity.Cell, error) {
+	field := r.playerFields[targetPlayerId]
 	size := len(field.Cells)
 	if size == 0 {
-		return nil, entity.ErrNoCellLeft(playerID)
+		return nil, entity.ErrNoCellLeft(targetPlayerId)
 	}
 	id := rand.Intn(size)
 	ans := field.Cells[id]
