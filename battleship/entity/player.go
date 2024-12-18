@@ -19,7 +19,7 @@ func (p *Player) GetName() string {
 }
 
 func (p *Player) ToString() string {
-	return p.Name
+	return p.GetName()
 }
 
 func NewPlayer(id int) *Player {

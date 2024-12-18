@@ -8,7 +8,7 @@ type defaultTargetStrategy struct {
 }
 
 func (d defaultTargetStrategy) GetTargetPlayer(currentPlayer *entity.Player, allPlayers []*entity.Player) (*entity.Player, error) {
-	if len(allPlayers) <= 0 {
+	if len(allPlayers) <= 1 {
 		return nil, entity.ERR_GAME_HAS_LESS_THAN_2_PLAYER
 	}
 

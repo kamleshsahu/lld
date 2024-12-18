@@ -11,16 +11,18 @@ type Board struct {
 
 func NewBoard(N int) *Board {
 	cells := make([][]*Cell, N)
-	for i := range cells {
-		cells[i] = make([]*Cell, N)
-		for j := range cells[i] {
-			cells[i][j] = &Cell{X: i, Y: j}
+	for j := range cells {
+		cells[j] = make([]*Cell, N)
+		for i := range cells[j] {
+			cells[j][i] = &Cell{X: i, Y: j}
 		}
 	}
 	return &Board{cells: cells}
 }
 
-func (b *Board) AddShip(ship *Ship, startLocation *Cell, size int) error {
+func (b *Board) AddShip(ship *Ship) error {
+	size := ship.Size
+	startLocation := ship.Location
 	for i := startLocation.X; i < startLocation.X+size; i++ {
 		for j := startLocation.Y; j < startLocation.Y+size; j++ {
 			b.cells[j][i].Ship = ship
@@ -30,18 +32,18 @@ func (b *Board) AddShip(ship *Ship, startLocation *Cell, size int) error {
 	return nil
 }
 
-func (b *Board) IsValidLocation(startLocation *Cell, size int) (bool, error) {
-	if !b.IsValidCell(startLocation) {
+func (b *Board) CanPlaceShip(startLocation *Cell, size int, owner *Player) (bool, error) {
+	endLocation := NewCell(startLocation.X+size-1, startLocation.Y+size-1)
+	if !b.IsValidCell(startLocation) || !b.IsValidCell(endLocation) {
 		return false, ERR_CELL_OUT_OF_BOUNDARY
 	}
-	owner := b.cells[startLocation.X][startLocation.Y].Owner
 	for i := startLocation.X; i < startLocation.X+size; i++ {
 		for j := startLocation.Y; j < startLocation.Y+size; j++ {
-			if b.cells[i][j].Ship != nil {
-				return false, ErrInvalidCellShip(startLocation, b.cells[i][j])
+			if b.cells[j][i].Ship != nil {
+				return false, ErrInvalidCellShip(startLocation, b.cells[j][i].Ship.GetId())
 			}
-			if b.cells[i][j].Owner != owner {
-				return false, ErrInvalidCellOwner(startLocation, b.cells[i][j], b.cells[i][j].Owner)
+			if b.cells[j][i].Owner != owner {
+				return false, ErrInvalidCellOwner(startLocation, b.cells[j][i], b.cells[j][i].Owner)
 			}
 		}
 	}
@@ -49,7 +51,7 @@ func (b *Board) IsValidLocation(startLocation *Cell, size int) (bool, error) {
 }
 
 func (b *Board) RemoveShip(cell *Cell) (*Ship, error) {
-	cell = b.GetCells()[cell.X][cell.Y]
+	cell = b.GetCells()[cell.Y][cell.X]
 	if !cell.HasShip() {
 		return nil, ErrNoShipPresentInCell(cell)
 	}
@@ -66,11 +68,21 @@ func (b *Board) RemoveShip(cell *Cell) (*Ship, error) {
 
 func (b *Board) ViewBattleField() string {
 	bf := strings.Builder{}
-
-	for i := 0; i < len(b.cells); i++ {
-		for j := 0; j < len(b.cells[0]); j++ {
-			if b.cells[i][j].Ship != nil {
-				bf.WriteString(fmt.Sprintf("%8s", b.cells[i][j].Owner.GetName()+"-"+b.cells[i][j].Ship.GetId()))
+	bf.WriteString("\n")
+	bf.WriteString(fmt.Sprintf("%8s", " "))
+	for colId, _ := range b.cells[0] {
+		bf.WriteString(fmt.Sprintf("%8d", colId))
+	}
+	bf.WriteString("\n")
+	for j, row := range b.GetCells() {
+		bf.WriteString(fmt.Sprintf("%8d", j))
+		for i, col := range row {
+			cellOwner := ""
+			if b.cells[j][i].Owner != nil {
+				cellOwner = col.Owner.GetName()
+			}
+			if b.cells[j][i].Ship != nil {
+				bf.WriteString(fmt.Sprintf("%8s", cellOwner+"-"+col.Ship.GetId()))
 			} else {
 				bf.WriteString(fmt.Sprintf("%8s", "."))
 			}
@@ -88,7 +100,7 @@ func (b *Board) IsValidCell(cell *Cell) bool {
 }
 
 func (b *Board) HasShip(cell *Cell) bool {
-	return b.cells[cell.X][cell.Y].HasShip()
+	return b.cells[cell.Y][cell.X].HasShip()
 }
 
 func (b *Board) GetCells() [][]*Cell {

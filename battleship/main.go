@@ -21,12 +21,12 @@ func main() {
 		panic(err)
 	}
 
-	err = gameService.AddShip("SH1", 2, 0, 2, 5, 3)
+	err = gameService.AddShip("SH1", 2, 2, 0, 5, 5)
 	if err != nil {
 		panic(err)
 	}
 
-	err = gameService.AddShip("SH2", 2, 3, 2, 6, 6)
+	err = gameService.AddShip("SH2", 3, 1, 4, 7, 2)
 	if err != nil {
 		panic(err)
 	}

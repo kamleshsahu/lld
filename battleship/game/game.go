@@ -14,7 +14,7 @@ import (
 
 type Game struct {
 	board                     *entity.Board
-	Players                   []*entity.Player
+	players                   []*entity.Player
 	fireStrategy              fireStrategy.FireStrategy
 	eliminationStrategy       eliminationStrategy.IEliminationStrategy
 	divideBattleFieldStrategy divideFieldStrategy.IDivideFieldStrategy
@@ -24,15 +24,18 @@ type Game struct {
 }
 
 func (game *Game) InitGame(N int) error {
+	if game.isStarted {
+		return entity.ERR_GAME_ALREADY_STARTED
+	}
 	game.board = entity.NewBoard(N)
-	game.Players = []*entity.Player{entity.NewPlayer(0), entity.NewPlayer(1)}
+	game.players = []*entity.Player{entity.NewPlayer(0), entity.NewPlayer(1)}
 
-	err := game.divideBattleFieldStrategy.Divide(game.board, game.Players)
+	err := game.divideBattleFieldStrategy.Divide(game.board, game.players)
 	if err != nil {
 		return err
 	}
 
-	game.fireStrategy.Init(utils.ClonePlayerFields(game.Players))
+	game.fireStrategy.Init(utils.ClonePlayerFields(game.players))
 	return nil
 }
 
@@ -40,26 +43,27 @@ func (game *Game) AddShip(id string, size, player1ShipX, player1ShipY, player2Sh
 	if game.board == nil {
 		return entity.ERR_GAME_HAS_NO_BOARD
 	}
-	if game.Players == nil {
+	if game.players == nil {
 		return entity.ERR_GAME_HAS_NO_PLAYERS
+	}
+
+	if game.isStarted {
+		return entity.ERR_GAME_ALREADY_STARTED
 	}
 
 	cells := []*entity.Cell{entity.NewCell(player1ShipX, player1ShipY), entity.NewCell(player2ShipX, player2ShipY)}
 
 	for i := 0; i < len(cells); i++ {
-		_, err := game.board.IsValidLocation(cells[i], size)
+		_, err := game.board.CanPlaceShip(cells[i], size, game.players[i])
 		if err != nil {
 			return err
 		}
-	}
-
-	for i := 0; i < len(cells); i++ {
-		game.Players[i].ShipCount++
-		ship := entity.NewShip(id, cells[i], size, game.Players[i])
-		err := game.board.AddShip(ship, cells[i], size)
+		ship := entity.NewShip(id, cells[i], size, game.players[i])
+		err = game.board.AddShip(ship)
 		if err != nil {
 			return err
 		}
+		game.players[i].ShipCount++
 	}
 
 	fmt.Printf(game.board.ViewBattleField())
@@ -67,17 +71,25 @@ func (game *Game) AddShip(id string, size, player1ShipX, player1ShipY, player2Sh
 }
 
 func (game *Game) StartGame() error {
+	if game.isStarted {
+		return entity.ERR_GAME_ALREADY_STARTED
+	}
+	if game.board == nil {
+		return entity.ERR_GAME_HAS_NO_BOARD
+	}
+
+	game.isStarted = true
 	fmt.Printf("Game started\n")
 	fmt.Printf(game.board.ViewBattleField())
 	for {
-		currentPlayer := game.Players[game.turn]
-		targetPlayer, _ := game.targetPlayerStrategy.GetTargetPlayer(currentPlayer, game.Players)
+		currentPlayer := game.players[game.turn]
+		targetPlayer, _ := game.targetPlayerStrategy.GetTargetPlayer(currentPlayer, game.players)
 		hitPosition, err := game.fireStrategy.GetFireLocation(targetPlayer.Id)
 		if err != nil {
 			return err
 		}
 
-		destroyedShip, err := game.fire(hitPosition)
+		destroyedShip, err := game.Fire(hitPosition)
 		if err != nil {
 			return err
 		}
@@ -88,14 +100,21 @@ func (game *Game) StartGame() error {
 		}
 
 		if !game.eliminationStrategy.IsEliminated(targetPlayer) {
-			fmt.Printf("Game Over, %s won the game\n", currentPlayer.GetName())
+			fmt.Printf("Game Over, Player %s won the game\n", currentPlayer.GetName())
 			break
 		}
 		time.Sleep(time.Second)
 		game.nextturn()
 	}
-
+	game.Reset()
 	return nil
+}
+
+func (game *Game) Reset() {
+	game.isStarted = false
+	game.turn = 0
+	game.board = nil
+	game.players = []*entity.Player{}
 }
 
 func (game *Game) ViewBattleField() string {
@@ -104,10 +123,10 @@ func (game *Game) ViewBattleField() string {
 
 func (game *Game) nextturn() {
 	game.turn++
-	game.turn = game.turn % len(game.Players)
+	game.turn = game.turn % len(game.players)
 }
 
-func (g *Game) fire(cell *entity.Cell) (*entity.Ship, error) {
+func (g *Game) Fire(cell *entity.Cell) (*entity.Ship, error) {
 	if !g.board.HasShip(cell) {
 		return nil, nil
 	}
@@ -135,4 +154,12 @@ func NewGame(fireStrategy fireStrategy.FireStrategy,
 		}
 	})
 	return gameInstance
+}
+
+func (game *Game) GetBoard() *entity.Board {
+	return game.board
+}
+
+func (game *Game) GetPlayers() []*entity.Player {
+	return game.players
 }
