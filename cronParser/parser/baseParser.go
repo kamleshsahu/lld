@@ -41,9 +41,9 @@ func (b *BaseParser) Format(vals []int) string {
 
 func NewBaseParser(low, high int, parserType entity.ParserType) IParser {
 	commands := make([]command.ICommand, 0)
-	commands = append(commands, command.NewAstricParser())
+	commands = append(commands, command.NewWildCardParser())
 	commands = append(commands, command.NewNumberParser())
-	commands = append(commands, command.NewDivisionParser())
+	commands = append(commands, command.NewStepParser())
 	commands = append(commands, command.NewRangeParser())
 	commands = append(commands, command.NewCommaParser())
 

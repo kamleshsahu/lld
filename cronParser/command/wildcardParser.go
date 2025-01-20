@@ -5,22 +5,22 @@ import (
 	"strings"
 )
 
-type AstricParser struct {
+type WildCardParser struct {
 	low  int
 	high int
 }
 
-func (d AstricParser) IsValid(token string) bool {
+func (w WildCardParser) IsValid(token string) bool {
 	return strings.EqualFold(token, "*")
 }
 
-func (d AstricParser) Execute(token string, low, high int) []int {
+func (w WildCardParser) Execute(token string, low, high int) []int {
 	if low >= 1970 {
 		return utils.YearDefaultList
 	}
 	return utils.GenericDefaultList[:high]
 }
 
-func NewAstricParser() ICommand {
-	return &AstricParser{}
+func NewWildCardParser() ICommand {
+	return &WildCardParser{}
 }
