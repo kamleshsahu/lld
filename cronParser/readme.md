@@ -20,6 +20,9 @@ To run the unit tests for the Cron Parser, use the following command:
 go test ./...
 ```
 
+### Class Diagram
+![Class Diagram](CronParser.drawio.png)
+
 ## Project Structure
 
 - `cronParser/cronParser.go`: Contains the main `CronParser` struct and methods for parsing cron expressions.
@@ -45,4 +48,4 @@ The `Expression` struct represents a parsed cron expression. It contains fields 
 
 Operators are used to parse different formats of time units in a cron expression. Examples include handling ranges (e.g., `1-5`), lists (e.g., `1,2,3`), and steps (e.g., `*/15`).
 
-![Class Diagram](CronParser.drawio.png)
+

@@ -6,6 +6,7 @@ import (
 	"lld/battleship/strategy/eliminationStrategy"
 	"lld/battleship/strategy/fireStrategy"
 	"lld/battleship/strategy/targetPlayerStrategy"
+	"sort"
 )
 
 func main() {
@@ -20,6 +21,8 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+
+	sort.SearchInts()
 
 	err = gameService.AddShip("SH1", 2, 2, 0, 5, 5)
 	if err != nil {
