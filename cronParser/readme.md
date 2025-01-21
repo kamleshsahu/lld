@@ -11,7 +11,15 @@ Example:
 go run main.go
 */15 0 1,15 * 1-5 /usr/bin/find
 ```
-
+output :
+```
+minute               0 15 30 45
+hour                 0
+day of month         1 15
+month                1 2 3 4 5 6 7 8 9 10 11 12
+day of week          1 2 3 4 5
+command              /usr/bin/find
+```
 ## Running Unit Tests
 
 To run the unit tests for the Cron Parser, use the following command:
@@ -26,7 +34,7 @@ go test ./...
 ## Project Structure
 
 - `cronParser/cronParser.go`: Contains the main `CronParser` struct and methods for parsing cron expressions.
-- `timeParser/baseParser.go`: Contains the `BaseParser` struct and methods for parsing individual time units in a cron expression.
+- `timeUnitParser/baseParser.go`: Contains the `BaseParser` struct and methods for parsing individual time units in a cron expression.
 - `cronParser/test/cronParser_test.go`: Contains unit tests for the `CronParser` functionality.
 - `entity`: Contains the `Expression` struct which represents a parsed cron expression.
 - `operator`: Contains various operator implementations for parsing different parts of a cron expression.

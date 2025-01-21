@@ -1,4 +1,4 @@
-package timeParser
+package timeUnitParser
 
 import (
 	"cronParser/customError"
@@ -45,6 +45,10 @@ func (b *BaseParser) isWithinRange(low int, high int, arr []int) error {
 	return nil
 }
 
-func NewBaseParser(low, high int, timeUnit entity.TimeUnit) ITimeUnitParser {
-	return &BaseParser{low: low, high: high, timeUnit: timeUnit, operators: operator.DefaultOperatorList()}
+func NewBaseParser(low, high int, timeUnit entity.TimeUnit, inputOps *[]operator.IOperator) ITimeUnitParser {
+	ops := operator.DefaultOperatorList()
+	if inputOps != nil {
+		ops = *inputOps
+	}
+	return &BaseParser{low: low, high: high, timeUnit: timeUnit, operators: ops}
 }

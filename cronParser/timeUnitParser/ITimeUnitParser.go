@@ -1,4 +1,4 @@
-package timeParser
+package timeUnitParser
 
 import "cronParser/entity"
 

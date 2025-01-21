@@ -3,12 +3,12 @@ package cronParser
 import (
 	"cronParser/customError"
 	"cronParser/entity"
-	"cronParser/timeParser"
+	"cronParser/timeUnitParser"
 	"strings"
 )
 
 type CronParser struct {
-	timeUnitParser []timeParser.ITimeUnitParser
+	timeUnitParser []timeUnitParser.ITimeUnitParser
 }
 
 func (c *CronParser) Parse(expression string) (*entity.Expression, error) {
@@ -48,8 +48,11 @@ func (c *CronParser) IsValidLength(tokens []string) error {
 	return nil
 }
 
-func NewDefaultCronParser() *CronParser {
+func NewDefaultCronParser(timeUnitParserMap *[]timeUnitParser.ITimeUnitParser) *CronParser {
 	cp := CronParser{}
-	cp.timeUnitParser = timeParser.DefaultTimeUnitParserMap()
+	cp.timeUnitParser = timeUnitParser.DefaultTimeUnitParserMap()
+	if timeUnitParserMap != nil {
+		cp.timeUnitParser = *timeUnitParserMap
+	}
 	return &cp
 }

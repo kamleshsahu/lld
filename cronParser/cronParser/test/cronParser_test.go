@@ -10,7 +10,7 @@ import (
 )
 
 func TestCronParserValid1(t *testing.T) {
-	parser := cronParser.NewDefaultCronParser()
+	parser := cronParser.NewDefaultCronParser(nil)
 	actual, err := parser.Parse("*/15 0 1,15 * 1-5 /usr/bin/find")
 
 	if err != nil {
@@ -31,7 +31,7 @@ func TestCronParserValid1(t *testing.T) {
 }
 
 func TestCronParserValid2(t *testing.T) {
-	parser := cronParser.NewDefaultCronParser()
+	parser := cronParser.NewDefaultCronParser(nil)
 	actual, err := parser.Parse("2/25 0,1 1-5 2,3 4-5 /usr/bin/find")
 
 	if err != nil {
@@ -52,7 +52,7 @@ func TestCronParserValid2(t *testing.T) {
 }
 
 func TestCronParserValid3(t *testing.T) {
-	parser := cronParser.NewDefaultCronParser()
+	parser := cronParser.NewDefaultCronParser(nil)
 	actual, err := parser.Parse("1 1 1 1 1 /usr/bin/find")
 
 	if err != nil {
@@ -73,7 +73,7 @@ func TestCronParserValid3(t *testing.T) {
 }
 
 func TestCronParserInvalidMinuteRange(t *testing.T) {
-	parser := cronParser.NewDefaultCronParser()
+	parser := cronParser.NewDefaultCronParser(nil)
 	_, err := parser.Parse("1-500 1 1 1 1 /usr/bin/find")
 
 	expected := customError.ErrInvalidNumberRange(string(entity.Minute))
@@ -85,7 +85,7 @@ func TestCronParserInvalidMinuteRange(t *testing.T) {
 }
 
 func TestCronParserInvalidNoOfToken(t *testing.T) {
-	parser := cronParser.NewDefaultCronParser()
+	parser := cronParser.NewDefaultCronParser(nil)
 	_, err := parser.Parse("1 1 1 1 /usr/bin/find")
 
 	expected := customError.ErrInvalidNoOfTokens(4, 5)
@@ -98,7 +98,7 @@ func TestCronParserInvalidNoOfToken(t *testing.T) {
 }
 
 func TestCronParserInvalidDayOfWeekRange(t *testing.T) {
-	parser := cronParser.NewDefaultCronParser()
+	parser := cronParser.NewDefaultCronParser(nil)
 	_, err := parser.Parse("1 1 1 1 5-2 /usr/bin/find")
 
 	expected := customError.ErrEmptyNumberRange(string(entity.DayOfWeek))
@@ -110,7 +110,7 @@ func TestCronParserInvalidDayOfWeekRange(t *testing.T) {
 }
 
 func TestCronParserInvalidDayFormat(t *testing.T) {
-	parser := cronParser.NewDefaultCronParser()
+	parser := cronParser.NewDefaultCronParser(nil)
 	_, err := parser.Parse("1 1 x 1 2-4 /usr/bin/find")
 
 	expected := customError.ErrNoMatchingOperation(string(entity.Day))
@@ -123,7 +123,7 @@ func TestCronParserInvalidDayFormat(t *testing.T) {
 }
 
 func TestCronParserInvalidDayFormat2(t *testing.T) {
-	parser := cronParser.NewDefaultCronParser()
+	parser := cronParser.NewDefaultCronParser(nil)
 	_, err := parser.Parse("1 1 2-3,4 1 2-4 /usr/bin/find")
 
 	if err == nil {

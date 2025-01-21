@@ -21,7 +21,7 @@ func main() {
 
 		cronExpression = cronExpression[:len(cronExpression)-1]
 
-		cp := cronParser.NewDefaultCronParser()
+		cp := cronParser.NewDefaultCronParser(nil)
 		exp, err := cp.Parse(cronExpression)
 
 		if err != nil {
