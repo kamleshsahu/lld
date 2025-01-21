@@ -1,6 +1,6 @@
 package parser
 
-import "lld/cronParser/entity"
+import "lld/cronParserOld/entity"
 
 type IParser interface {
 	Parse(token string, schedule *entity.Expression) string

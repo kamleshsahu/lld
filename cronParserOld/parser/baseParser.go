@@ -2,8 +2,8 @@ package parser
 
 import (
 	"fmt"
-	"lld/cronParser/command"
-	"lld/cronParser/entity"
+	"lld/cronParserOld/command"
+	"lld/cronParserOld/entity"
 	"strconv"
 	"strings"
 )

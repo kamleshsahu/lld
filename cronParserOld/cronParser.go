@@ -1,8 +1,8 @@
 package main
 
 import (
-	"lld/cronParser/entity"
-	"lld/cronParser/parser"
+	"lld/cronParserOld/entity"
+	"lld/cronParserOld/parser"
 	"strings"
 )
 

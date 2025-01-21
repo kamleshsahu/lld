@@ -1,35 +1,36 @@
 package main
 
 import (
+	"bufio"
+	"cronParser/cronParser"
 	"fmt"
-	"time"
+	"os"
 )
 
-//
-//schudule1, ans1 := CronParser("*/15 * * * trigger")
-//fmt.Println(schudule1, ans1)
-//
-//schudule2, ans2 := CronParser("*/15 2-6 */5 */6 trigger")
-//fmt.Println(schudule2, ans2)
-
-//ans3 := CronParser("* * * 4,5,6 trigger")
-//fmt.Println(ans3)
-
-//fromDate := time.Date(2028, time.Month(2), 29, 1, 0, 0, 0, time.Now().Location())
-
 func main() {
+	for {
+		reader := bufio.NewReader(os.Stdin)
+		var cronExpression string
 
-	exp, _ := CronParser("10 */30 0 29 2 * trigger")
-	//fmt.Println(str)
-	fmt.Println()
-	now := time.Now()
-	nextTrigger := exp.Next(now)
+		cronExpression, err := reader.ReadString('\n')
+		if cronExpression == "x\n" {
+			break
+		}
+		if err != nil {
+			fmt.Println("Error reading input:", err)
+			return
+		}
 
-	fmt.Println(nextTrigger)
+		cronExpression = cronExpression[:len(cronExpression)-1]
 
-	nextTrigger2 := exp.Next(nextTrigger.Add(time.Second))
-	fmt.Println(nextTrigger2)
+		cp := cronParser.NewDefaultCronParser()
+		exp, err := cp.Parse(cronExpression)
 
-	nextTrigger3 := exp.Next(nextTrigger2.Add(time.Second))
-	fmt.Println(nextTrigger3)
+		if err != nil {
+			fmt.Println("Error parsing cron expression:", err)
+			return
+		}
+
+		fmt.Println(exp.ToString())
+	}
 }
