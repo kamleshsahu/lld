@@ -1,6 +1,7 @@
 package customError
 
 import (
+	"errors"
 	"fmt"
 )
 
@@ -10,6 +11,10 @@ var (
 	INVALID_NUMBER_RANGE  = "%s : invalid values"
 	EMPTY_NUMBER_RANGE    = "%s : empty"
 	INVALID_NO_OF_TOKENS  = "invalid no of tokens, actual = %d, expected %d"
+)
+
+var (
+	ERR_EMPTY_INPUT_EXPRESSION = errors.New("invalid expression")
 )
 
 func ErrNoMatchingOperation(timeUnit string) error {

@@ -14,6 +14,10 @@ type CronParser struct {
 func (c *CronParser) Parse(expression string) (*entity.Expression, error) {
 	tokens := strings.Split(expression, " ")
 
+	if len(tokens) == 0 {
+		return nil, customError.ERR_EMPTY_INPUT_EXPRESSION
+	}
+
 	exp := entity.NewExpression()
 	tokens, exp.Command = c.pluckCommand(tokens)
 
@@ -32,13 +36,8 @@ func (c *CronParser) Parse(expression string) (*entity.Expression, error) {
 }
 
 func (c *CronParser) pluckCommand(tokens []string) ([]string, string) {
-	if len(tokens) < 1 {
-		return tokens, ""
-	}
 	last := len(tokens) - 1
-	command := tokens[last]
-	tokens = tokens[:last]
-	return tokens, command
+	return tokens[:last], tokens[last]
 }
 
 func (c *CronParser) IsValidLength(tokens []string) error {
