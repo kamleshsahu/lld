@@ -72,7 +72,7 @@ func TestCronParserValid3(t *testing.T) {
 	}
 }
 
-func TestCronParserInvalid1(t *testing.T) {
+func TestCronParserInvalidMinuteRange(t *testing.T) {
 	parser := cronParser.NewDefaultCronParser()
 	_, err := parser.Parse("1-500 1 1 1 1 /usr/bin/find")
 
@@ -84,7 +84,7 @@ func TestCronParserInvalid1(t *testing.T) {
 	}
 }
 
-func TestCronParserInvalid2(t *testing.T) {
+func TestCronParserInvalidNoOfToken(t *testing.T) {
 	parser := cronParser.NewDefaultCronParser()
 	_, err := parser.Parse("1 1 1 1 /usr/bin/find")
 
@@ -97,7 +97,7 @@ func TestCronParserInvalid2(t *testing.T) {
 	}
 }
 
-func TestCronParserInvalid3(t *testing.T) {
+func TestCronParserInvalidDayOfWeekRange(t *testing.T) {
 	parser := cronParser.NewDefaultCronParser()
 	_, err := parser.Parse("1 1 1 1 5-2 /usr/bin/find")
 
@@ -109,7 +109,7 @@ func TestCronParserInvalid3(t *testing.T) {
 	}
 }
 
-func TestCronParserInvalid4(t *testing.T) {
+func TestCronParserInvalidDayFormat(t *testing.T) {
 	parser := cronParser.NewDefaultCronParser()
 	_, err := parser.Parse("1 1 x 1 2-4 /usr/bin/find")
 
@@ -122,7 +122,7 @@ func TestCronParserInvalid4(t *testing.T) {
 	}
 }
 
-func TestCronParserInvalid5(t *testing.T) {
+func TestCronParserInvalidDayFormat2(t *testing.T) {
 	parser := cronParser.NewDefaultCronParser()
 	_, err := parser.Parse("1 1 2-3,4 1 2-4 /usr/bin/find")
 
