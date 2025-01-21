@@ -1,9 +1,9 @@
 package cronParser
 
 import (
+	"cronParser/customError"
 	"cronParser/entity"
 	"cronParser/timeParser"
-	"errors"
 	"strings"
 )
 
@@ -43,7 +43,7 @@ func (c *CronParser) pluckCommand(tokens []string) ([]string, string) {
 
 func (c *CronParser) IsValidLength(tokens []string) error {
 	if len(tokens) != len(c.timeUnitParser) {
-		return errors.New("invalid no of tokens")
+		return customError.ErrInvalidNoOfTokens(len(tokens), len(c.timeUnitParser))
 	}
 	return nil
 }

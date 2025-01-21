@@ -13,9 +13,7 @@ func main() {
 		var cronExpression string
 
 		cronExpression, err := reader.ReadString('\n')
-		if cronExpression == "x\n" {
-			break
-		}
+
 		if err != nil {
 			fmt.Println("Error reading input:", err)
 			return

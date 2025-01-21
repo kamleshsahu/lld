@@ -1,9 +1,9 @@
 package timeParser
 
 import (
+	"cronParser/customError"
 	"cronParser/entity"
 	"cronParser/operator"
-	"fmt"
 )
 
 type BaseParser struct {
@@ -19,7 +19,7 @@ func (b *BaseParser) Parse(token string, expression *entity.Expression) error {
 		if operation.IsApplicable(token) {
 			vals, err := operation.Execute(token, b.low, b.high)
 			if err != nil {
-				return fmt.Errorf("%s : %s", b.timeUnit, err)
+				return customError.ErrParsingToken(b.timeUnit.String(), err)
 			}
 			err = b.isWithinRange(b.low, b.high, vals)
 			if err != nil {
@@ -30,16 +30,16 @@ func (b *BaseParser) Parse(token string, expression *entity.Expression) error {
 		}
 	}
 
-	return fmt.Errorf("%s : %s", b.timeUnit, "no matching opertion")
+	return customError.ErrNoMatchingOperation(b.timeUnit.String())
 }
 
 func (b *BaseParser) isWithinRange(low int, high int, arr []int) error {
 	if len(arr) == 0 {
-		return fmt.Errorf("%s : empty", b.timeUnit)
+		return customError.ErrEmptyNumberRange(b.timeUnit.String())
 	}
 	for _, val := range arr {
 		if val < low || val > high {
-			return fmt.Errorf("%s : invalid values", b.timeUnit)
+			return customError.ErrInvalidNumberRange(b.timeUnit.String())
 		}
 	}
 	return nil

@@ -2,6 +2,7 @@ package test
 
 import (
 	"cronParser/cronParser"
+	"cronParser/customError"
 	"cronParser/entity"
 	"reflect"
 	"testing"
@@ -75,10 +76,11 @@ func TestCronParserInvalid1(t *testing.T) {
 	parser := cronParser.NewDefaultCronParser()
 	_, err := parser.Parse("1-500 1 1 1 1 /usr/bin/find")
 
+	expected := customError.ErrInvalidNumberRange(string(entity.Minute))
 	if err == nil {
 		t.Errorf("Expected an error but got nil")
-	} else if err.Error() != "minute : invalid values" {
-		t.Errorf("Expected invalid values but got: %v", err)
+	} else if err.Error() != expected.Error() {
+		t.Errorf("Expected day : %v got: %v", expected, err)
 	}
 }
 
@@ -86,9 +88,11 @@ func TestCronParserInvalid2(t *testing.T) {
 	parser := cronParser.NewDefaultCronParser()
 	_, err := parser.Parse("1 1 1 1 /usr/bin/find")
 
+	expected := customError.ErrInvalidNoOfTokens(4, 5)
+
 	if err == nil {
 		t.Errorf("Expected an error but got nil")
-	} else if err.Error() != "invalid no of tokens" {
+	} else if err.Error() != expected.Error() {
 		t.Errorf("Expected invalid no of tokens but got: %v", err)
 	}
 }
@@ -97,9 +101,10 @@ func TestCronParserInvalid3(t *testing.T) {
 	parser := cronParser.NewDefaultCronParser()
 	_, err := parser.Parse("1 1 1 1 5-2 /usr/bin/find")
 
+	expected := customError.ErrEmptyNumberRange(string(entity.DayOfWeek))
 	if err == nil {
 		t.Errorf("Expected an error but got nil")
-	} else if err.Error() != "dayOfWeek : empty" {
+	} else if err.Error() != expected.Error() {
 		t.Errorf("Expected dayOfWeek : empty but got: %v", err)
 	}
 }
@@ -108,9 +113,11 @@ func TestCronParserInvalid4(t *testing.T) {
 	parser := cronParser.NewDefaultCronParser()
 	_, err := parser.Parse("1 1 x 1 2-4 /usr/bin/find")
 
+	expected := customError.ErrNoMatchingOperation(string(entity.Day))
+
 	if err == nil {
 		t.Errorf("Expected an error but got nil")
-	} else if err.Error() != "day : no matching opertion" {
+	} else if err.Error() != expected.Error() {
 		t.Errorf("Expected day : no matching opertion but got: %v", err)
 	}
 }
