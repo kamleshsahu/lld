@@ -6,6 +6,6 @@ type ITimeUnitParser interface {
 	Parse(token string, expression *entity.Expression) error
 }
 
-func DefaultTimeUnitMap() []ITimeUnitParser {
+func DefaultTimeUnitParserMap() []ITimeUnitParser {
 	return []ITimeUnitParser{NewMinuteParser(), NewHourParser(), NewDayParser(), NewMonthParser(), NewDayOfWeekParser()}
 }

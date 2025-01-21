@@ -8,7 +8,7 @@ import (
 )
 
 type CronParser struct {
-	parserMap []timeParser.ITimeUnitParser
+	timeUnitParser []timeParser.ITimeUnitParser
 }
 
 func (c *CronParser) Parse(expression string) (*entity.Expression, error) {
@@ -22,7 +22,7 @@ func (c *CronParser) Parse(expression string) (*entity.Expression, error) {
 	}
 
 	for i, token := range tokens {
-		err := c.parserMap[i].Parse(token, exp)
+		err := c.timeUnitParser[i].Parse(token, exp)
 		if err != nil {
 			return nil, err
 		}
@@ -42,7 +42,7 @@ func (c *CronParser) pluckCommand(tokens []string) ([]string, string) {
 }
 
 func (c *CronParser) IsValidLength(tokens []string) error {
-	if len(tokens) != len(c.parserMap) {
+	if len(tokens) != len(c.timeUnitParser) {
 		return errors.New("invalid no of tokens")
 	}
 	return nil
@@ -50,6 +50,6 @@ func (c *CronParser) IsValidLength(tokens []string) error {
 
 func NewDefaultCronParser() *CronParser {
 	cp := CronParser{}
-	cp.parserMap = timeParser.DefaultTimeUnitMap()
+	cp.timeUnitParser = timeParser.DefaultTimeUnitParserMap()
 	return &cp
 }
