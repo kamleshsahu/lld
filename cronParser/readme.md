@@ -27,7 +27,6 @@ go test ./...
 - `cronParser/test/cronParser_test.go`: Contains unit tests for the `CronParser` functionality.
 - `entity`: Contains the `Expression` struct which represents a parsed cron expression.
 - `operator`: Contains various operator implementations for parsing different parts of a cron expression.
-
 ## Components
 
 ### CronParser
@@ -46,3 +45,4 @@ The `Expression` struct represents a parsed cron expression. It contains fields 
 
 Operators are used to parse different formats of time units in a cron expression. Examples include handling ranges (e.g., `1-5`), lists (e.g., `1,2,3`), and steps (e.g., `*/15`).
 
+![Class Diagram](CronParser.drawio.png)
