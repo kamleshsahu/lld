@@ -11,7 +11,7 @@ func (w WildCardParser) IsApplicable(token string) bool {
 	return strings.EqualFold(token, "*")
 }
 
-func (w WildCardParser) Execute(token string, low, high int) ([]int, error) {
+func (w WildCardParser) Execute(token string, low, high int, toNumber func(val string) (int, error)) ([]int, error) {
 	arr := make([]int, 0)
 
 	for i := low; i <= high; i++ {

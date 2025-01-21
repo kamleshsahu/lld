@@ -2,6 +2,12 @@ package timeUnitParser
 
 import "cronParser/entity"
 
+type hourParser struct {
+	*BaseParser
+}
+
 func NewHourParser() ITimeUnitParser {
-	return NewBaseParser(0, 23, entity.Hour, nil)
+	return &hourParser{
+		BaseParser: NewBaseParser(0, 23, entity.Hour, nil, nil).(*BaseParser),
+	}
 }

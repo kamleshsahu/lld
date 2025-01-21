@@ -1,7 +1,6 @@
 package operator
 
 import (
-	"strconv"
 	"strings"
 )
 
@@ -12,14 +11,14 @@ func (d RangeParser) IsApplicable(token string) bool {
 	return strings.Contains(token, "-")
 }
 
-func (d RangeParser) Execute(token string, low, high int) ([]int, error) {
+func (d RangeParser) Execute(token string, low, high int, toNumber func(val string) (int, error)) ([]int, error) {
 	splitToken := strings.Split(token, "-")
 
-	start, err := strconv.Atoi(splitToken[0])
+	start, err := toNumber(splitToken[0])
 	if err != nil {
 		return nil, err
 	}
-	end, err := strconv.Atoi(splitToken[1])
+	end, err := toNumber(splitToken[1])
 	if err != nil {
 		return nil, err
 	}

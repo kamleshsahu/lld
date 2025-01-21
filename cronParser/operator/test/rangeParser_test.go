@@ -13,7 +13,7 @@ func TestRangeParserValid1(t *testing.T) {
 	parser := operator.NewRangeParser()
 
 	parser.IsApplicable(token)
-	actual, err := parser.Execute(token, 0, 59)
+	actual, err := parser.Execute(token, 0, 59, strconv.Atoi)
 	if err != nil {
 		t.Errorf("Error: %v", err)
 	}
@@ -40,7 +40,7 @@ func TestRangeParserInvalidValue(t *testing.T) {
 	if !isApplicable {
 		t.Errorf("Expected true but got false")
 	}
-	_, err := parser.Execute(token, 0, 3)
+	_, err := parser.Execute(token, 0, 3, strconv.Atoi)
 	if err == nil {
 		t.Errorf("Expected an error but got nil")
 	} else if _, ok := err.(*strconv.NumError); !ok {

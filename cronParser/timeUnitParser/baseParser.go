@@ -4,6 +4,7 @@ import (
 	"cronParser/customError"
 	"cronParser/entity"
 	"cronParser/operator"
+	"strconv"
 )
 
 type BaseParser struct {
@@ -11,15 +12,15 @@ type BaseParser struct {
 	high      int
 	timeUnit  entity.TimeUnit
 	operators []operator.IOperator
-	isValid   func(vals []int) error
+	parseFn   func(string) (int, error)
 }
 
 func (b *BaseParser) Parse(token string, expression *entity.Expression) error {
 	for _, operation := range b.operators {
 		if operation.IsApplicable(token) {
-			vals, err := operation.Execute(token, b.low, b.high)
+			vals, err := operation.Execute(token, b.low, b.high, b.StringToNumber)
 			if err != nil {
-				return customError.ErrParsingToken(b.timeUnit.String(), err)
+				return customError.ErrParsingToken(b.timeUnit.String(), err.Error())
 			}
 			err = b.isWithinRange(b.low, b.high, vals)
 			if err != nil {
@@ -45,10 +46,17 @@ func (b *BaseParser) isWithinRange(low int, high int, arr []int) error {
 	return nil
 }
 
-func NewBaseParser(low, high int, timeUnit entity.TimeUnit, inputOps *[]operator.IOperator) ITimeUnitParser {
+func (b *BaseParser) StringToNumber(value string) (int, error) {
+	if b.parseFn != nil {
+		return b.parseFn(value)
+	}
+	return strconv.Atoi(value)
+}
+
+func NewBaseParser(low, high int, timeUnit entity.TimeUnit, inputOps *[]operator.IOperator, parseFn func(string) (int, error)) ITimeUnitParser {
 	ops := operator.DefaultOperatorList()
 	if inputOps != nil {
 		ops = *inputOps
 	}
-	return &BaseParser{low: low, high: high, timeUnit: timeUnit, operators: ops}
+	return &BaseParser{low: low, high: high, timeUnit: timeUnit, operators: ops, parseFn: parseFn}
 }

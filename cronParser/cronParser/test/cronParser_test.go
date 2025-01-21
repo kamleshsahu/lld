@@ -72,6 +72,27 @@ func TestCronParserValid3(t *testing.T) {
 	}
 }
 
+func TestCronParserValid4(t *testing.T) {
+	parser := cronParser.NewDefaultCronParser(nil)
+	actual, err := parser.Parse("1 1 1 JAN/15 MON,FRI,SAT /usr/bin/find")
+
+	if err != nil {
+		t.Errorf("Error: %v", err)
+	}
+
+	expected := entity.NewExpression()
+	expected.Hour = []int{1}
+	expected.Minute = []int{1}
+	expected.Day = map[int]bool{1: true}
+	expected.Month = []time.Month{1}
+	expected.DayOfWeek = map[int]bool{1: true, 5: true, 6: true}
+	expected.Command = "/usr/bin/find"
+
+	if !reflect.DeepEqual(expected, actual) {
+		t.Errorf("Expected %v but got %v", expected, actual)
+	}
+}
+
 func TestCronParserInvalidMinuteRange(t *testing.T) {
 	parser := cronParser.NewDefaultCronParser(nil)
 	_, err := parser.Parse("1-500 1 1 1 1 /usr/bin/find")

@@ -4,6 +4,12 @@ import (
 	"cronParser/entity"
 )
 
+type minuteParser struct {
+	*BaseParser
+}
+
 func NewMinuteParser() ITimeUnitParser {
-	return NewBaseParser(0, 59, entity.Minute, nil)
+	return &minuteParser{
+		BaseParser: NewBaseParser(0, 59, entity.Minute, nil, nil).(*BaseParser),
+	}
 }

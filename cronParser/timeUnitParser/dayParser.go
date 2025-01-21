@@ -1,7 +1,15 @@
 package timeUnitParser
 
-import "cronParser/entity"
+import (
+	"cronParser/entity"
+)
+
+type dayParser struct {
+	*BaseParser
+}
 
 func NewDayParser() ITimeUnitParser {
-	return NewBaseParser(1, 31, entity.Day, nil)
+	return &dayParser{
+		BaseParser: NewBaseParser(1, 31, entity.Day, nil, nil).(*BaseParser),
+	}
 }

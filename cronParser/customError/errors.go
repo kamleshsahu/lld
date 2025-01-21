@@ -21,7 +21,7 @@ func ErrNoMatchingOperation(timeUnit string) error {
 	return fmt.Errorf(NO_MATCHING_OPERATION, timeUnit)
 }
 
-func ErrParsingToken(timeUnit string, err error) error {
+func ErrParsingToken(timeUnit string, err string) error {
 	return fmt.Errorf(PARSE_ERROR, timeUnit, err)
 }
 
