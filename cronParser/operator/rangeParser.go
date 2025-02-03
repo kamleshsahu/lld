@@ -24,8 +24,17 @@ func (d RangeParser) Execute(token string, low, high int, toNumber func(val stri
 	}
 	ans := make([]int, 0)
 
-	for i := start; i <= end; i++ {
-		ans = append(ans, i)
+	if start < end {
+		for i := start; i <= end; i++ {
+			ans = append(ans, i)
+		}
+	} else {
+		for i := start; i <= high; i++ {
+			ans = append(ans, i)
+		}
+		for i := low; i <= end; i++ {
+			ans = append(ans, i)
+		}
 	}
 	return ans, nil
 }

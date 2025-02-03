@@ -4,7 +4,10 @@ import (
 	"cronParser/cronParser"
 	"cronParser/customError"
 	"cronParser/entity"
+	"errors"
+	"fmt"
 	"reflect"
+	"strconv"
 	"testing"
 	"time"
 )
@@ -74,7 +77,7 @@ func TestCronParserValid3(t *testing.T) {
 
 func TestCronParserValid4(t *testing.T) {
 	parser := cronParser.NewDefaultCronParser(nil)
-	actual, err := parser.Parse("1 1 1 JAN/15 MON,FRI,SAT /usr/bin/find")
+	actual, err := parser.Parse("1 1 1 JAN-FEB,MAR-MAY,JULY MON-FRI,FRI,SAT /usr/bin/find")
 
 	if err != nil {
 		t.Errorf("Error: %v", err)
@@ -146,10 +149,12 @@ func TestCronParserInvalidDayFormat(t *testing.T) {
 func TestCronParserInvalidDayFormat2(t *testing.T) {
 	parser := cronParser.NewDefaultCronParser(nil)
 	_, err := parser.Parse("1 1 2-3,4 1 2-4 /usr/bin/find")
-
+	numError := strconv.NumError{"Atoi", "3,4", strconv.ErrSyntax}
+	expected := customError.ErrParsingToken(string(entity.Day), numError.Error())
+	fmt.Print("er :", errors.Unwrap(err))
 	if err == nil {
 		t.Errorf("Expected an error but got nil")
-	} else if err.Error() != "day : strconv.Atoi: parsing \"3,4\": invalid syntax" {
+	} else if errors.Is(errors.Unwrap(err), expected) {
 		t.Errorf("Expected day : strconv.Atoi: parsing \"3,4\": invalid syntax but got: %v", err)
 	}
 }

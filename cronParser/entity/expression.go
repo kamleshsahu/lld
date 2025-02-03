@@ -3,6 +3,7 @@ package entity
 import (
 	"cronParser/utils"
 	"fmt"
+	"sort"
 	"strings"
 	"time"
 )
@@ -54,6 +55,83 @@ func (e *Expression) ToString() string {
 	}
 
 	return result.String()
+}
+
+func (e *Expression) Next(fromTime time.Time) time.Time {
+	return e.MonthMatch(fromTime)
+}
+
+func (e *Expression) MonthMatch(fromTime time.Time) time.Time {
+	idx := sort.Search(len(e.Month), func(i int) bool {
+		return e.Month[i] >= fromTime.Month()
+	})
+	if idx == len(e.Month) {
+		// No matching month in the current year, increment to the next year
+		nextYear := time.Date(fromTime.Year()+1, time.January, 1, 0, 0, 0, 0, fromTime.Location())
+		// Change in year, restart matching with newTime
+		return e.MonthMatch(nextYear)
+	}
+
+	// Matching month found
+	month := e.Month[idx]
+	if month > fromTime.Month() {
+		// Reset time to 1st day of next month
+		t := time.Date(fromTime.Year(), month, 1, 0, 0, 0, 0, fromTime.Location())
+		// Match day
+		return e.DayMatch(t)
+	}
+	// Exact month found, now match day
+	return e.DayMatch(fromTime)
+}
+
+func (e *Expression) DayMatch(fromTime time.Time) time.Time {
+	// each month can have different no. of daye (bw 1 - 30 or 1-31 or 1-28 in case of feb),
+	// so recompute actual no of daye using below function
+	days := e.calculateActualDaysOfMonth(fromTime.Year(), int(fromTime.Month()), fromTime.Location())
+
+	idx := sort.Search(len(days), func(i int) bool {
+		return days[i] >= fromTime.Day()
+	})
+	if idx == len(days) {
+		// No matching day in the current month, move to the next month
+		nextMonth := time.Date(fromTime.Year(), fromTime.Month()+1, 1, 0, 0, 0, 0, fromTime.Location())
+		// Increment 1 month can lead to change in year, restart matching with newTime
+		return e.MonthMatch(nextMonth)
+	}
+
+	// Matching day found
+	day := days[idx]
+	if day > fromTime.Day() {
+		t := time.Date(fromTime.Year(), fromTime.Month(), day, 0, 0, 0, 0, fromTime.Location())
+		return t
+	}
+	// Exact day match, now match hour
+	return fromTime
+}
+
+func (e *Expression) calculateActualDaysOfMonth(year, month int, location *time.Location) []int {
+	firstDayOfMonth := time.Date(year, time.Month(month), 1, 0, 0, 0, 0, location)
+	lastDayOfMonth := firstDayOfMonth.AddDate(0, 1, -1)
+
+	ans := make([]int, 0)
+	mymap := make(map[int]int)
+	for _, val := range utils.GenericDefaultList[1 : lastDayOfMonth.Day()+1] {
+		mymap[val] = int(time.Date(year, time.Month(month), val, 0, 0, 0, 0, location).Weekday())
+	}
+	for val, exist := range e.Day {
+		if !exist {
+			continue
+		}
+		if _, exist = mymap[val]; !exist {
+			continue
+		}
+		if !e.DayOfWeek[mymap[val]] {
+			continue
+		}
+		ans = append(ans, val)
+	}
+	sort.Ints(ans)
+	return ans
 }
 
 func NewExpression() *Expression {

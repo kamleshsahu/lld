@@ -1,6 +1,7 @@
 package operator
 
 import (
+	"regexp"
 	"strconv"
 )
 
@@ -9,7 +10,8 @@ type SingleValueParser struct {
 
 func (d SingleValueParser) IsApplicable(token string) bool {
 	_, err := strconv.Atoi(token)
-	return err == nil
+	re := regexp.MustCompile(`^([A-Za-z]+)`)
+	return err == nil || re.MatchString(token)
 }
 
 func (d SingleValueParser) Execute(token string, low, high int, toNumber func(val string) (int, error)) ([]int, error) {

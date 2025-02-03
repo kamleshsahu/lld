@@ -2,13 +2,14 @@ package test
 
 import (
 	"cronParser/operator"
+	"fmt"
 	"reflect"
 	"strconv"
 	"testing"
 )
 
 func TestCommaParser(t *testing.T) {
-	token := "1,2,3"
+	token := "7-8,9-11,3"
 	expected := []int{1, 2, 3}
 	parser := operator.NewCommaParser()
 
@@ -49,4 +50,19 @@ func TestCommaParserInvalidValue(t *testing.T) {
 	} else if _, ok := err.(*strconv.NumError); !ok {
 		t.Errorf("Expected int conv error but got: %v", err)
 	}
+}
+
+func TestCommaParserValidValue(t *testing.T) {
+	token := "1"
+	parser := operator.NewCommaParser()
+
+	isApplicable := parser.IsApplicable(token)
+	if !isApplicable {
+		t.Errorf("Expected true but got false")
+	}
+	vals, err := parser.Execute(token, 0, 3, strconv.Atoi)
+	if err != nil {
+		t.Errorf("Expected an nil but got err")
+	}
+	fmt.Println(vals)
 }

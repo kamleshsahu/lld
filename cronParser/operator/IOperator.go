@@ -8,9 +8,7 @@ type IOperator interface {
 func DefaultOperatorList() []IOperator {
 	commands := []IOperator{
 		NewWildCardParser(),
-		NewSingleValueParser(),
 		NewStepParser(),
-		NewRangeParser(),
 		NewCommaParser(),
 	}
 	return commands

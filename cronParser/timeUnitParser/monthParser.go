@@ -3,6 +3,7 @@ package timeUnitParser
 import (
 	"cronParser/customError"
 	"cronParser/entity"
+	"fmt"
 )
 
 var (
@@ -25,7 +26,7 @@ func NewMonthParser() ITimeUnitParser {
 func stringToMonthNumber(val string) (int, error) {
 	monthMapVal, ok := monthMap[val]
 	if !ok {
-		return 0, customError.ErrParsingToken(string(entity.Month), "invalid month")
+		return 0, customError.ErrParsingToken(string(entity.Month), fmt.Sprintf("invalid month %s", val))
 	}
 	return monthMapVal, nil
 }

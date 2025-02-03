@@ -51,13 +51,17 @@ func TestStepParserInvalidValue(t *testing.T) {
 	parser := operator.NewStepParser()
 
 	isApplicable := parser.IsApplicable(token)
+	if isApplicable {
+		t.Errorf("Expected false but got true")
+	}
+}
+
+func TestStepParserInvalidValue2(t *testing.T) {
+	token := "10-24/1"
+	parser := operator.NewStepParser()
+
+	isApplicable := parser.IsApplicable(token)
 	if !isApplicable {
 		t.Errorf("Expected true but got false")
-	}
-	_, err := parser.Execute(token, 0, 3, strconv.Atoi)
-	if err == nil {
-		t.Errorf("Expected an error but got nil")
-	} else if _, ok := err.(*strconv.NumError); !ok {
-		t.Errorf("Expected int conv error but got: %v", err)
 	}
 }

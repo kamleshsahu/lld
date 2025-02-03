@@ -1,34 +1,34 @@
 package main
 
 import (
-	"bufio"
 	"cronParser/cronParser"
 	"fmt"
-	"os"
+	"time"
 )
 
 func main() {
-	for {
-		reader := bufio.NewReader(os.Stdin)
-		var cronExpression string
+	//reader := bufio.NewReader(os.Stdin)
+	//var cronExpression string
+	//
+	//cronExpression, err := reader.ReadString('\n')
+	//
+	//if err != nil {
+	//	fmt.Println("Error reading input:", err)
+	//	return
+	//}
 
-		cronExpression, err := reader.ReadString('\n')
+	//cronExpression = cronExpression[:len(cronExpression)-1]
 
-		if err != nil {
-			fmt.Println("Error reading input:", err)
-			return
-		}
+	cp := cronParser.NewDefaultCronParser(nil)
+	exp, err := cp.Parse("*/15 2-4,4-8 2,1 1 2 /usr/bin/find")
 
-		cronExpression = cronExpression[:len(cronExpression)-1]
+	next := exp.Next(time.Now())
+	fmt.Println(next.String(), next.Weekday())
 
-		cp := cronParser.NewDefaultCronParser(nil)
-		exp, err := cp.Parse(cronExpression)
-
-		if err != nil {
-			fmt.Println("Error parsing cron expression:", err)
-			return
-		}
-
-		fmt.Println(exp.ToString())
+	if err != nil {
+		fmt.Println("Error parsing cron expression:", err)
+		return
 	}
+	fmt.Println()
+	fmt.Println(exp.ToString())
 }

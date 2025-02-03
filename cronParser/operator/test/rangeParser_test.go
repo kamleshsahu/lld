@@ -32,6 +32,16 @@ func TestRangeParserNotApplicable(t *testing.T) {
 	}
 }
 
+func TestRangeParserApplicable2(t *testing.T) {
+	token := "JAN-MAR,APR,JUN-JULY"
+	parser := operator.NewCommaParser()
+
+	isApplicable := parser.IsApplicable(token)
+	if !isApplicable {
+		t.Errorf("Expected false but got true")
+	}
+}
+
 func TestRangeParserInvalidValue(t *testing.T) {
 	token := "10-*"
 	parser := operator.NewRangeParser()

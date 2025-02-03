@@ -18,7 +18,7 @@ type BaseParser struct {
 func (b *BaseParser) Parse(token string, expression *entity.Expression) error {
 	for _, operation := range b.operators {
 		if operation.IsApplicable(token) {
-			vals, err := operation.Execute(token, b.low, b.high, b.StringToNumber)
+			vals, err := operation.Execute(token, b.low, b.high, b.parseFn)
 			if err != nil {
 				return customError.ErrParsingToken(b.timeUnit.String(), err.Error())
 			}
@@ -46,17 +46,13 @@ func (b *BaseParser) isWithinRange(low int, high int, arr []int) error {
 	return nil
 }
 
-func (b *BaseParser) StringToNumber(value string) (int, error) {
-	if b.parseFn != nil {
-		return b.parseFn(value)
-	}
-	return strconv.Atoi(value)
-}
-
 func NewBaseParser(low, high int, timeUnit entity.TimeUnit, inputOps *[]operator.IOperator, parseFn func(string) (int, error)) ITimeUnitParser {
 	ops := operator.DefaultOperatorList()
 	if inputOps != nil {
 		ops = *inputOps
+	}
+	if parseFn == nil {
+		parseFn = strconv.Atoi
 	}
 	return &BaseParser{low: low, high: high, timeUnit: timeUnit, operators: ops, parseFn: parseFn}
 }

@@ -9,8 +9,9 @@ To use the Cron Parser, follow these steps:
 Example:
 ```sh
 go run main.go
-*/15 0 1,15 * 1-5 /usr/bin/find
+*/15 2-4,4-8 1,15 5-1 0-5 /usr/bin/find
 ```
+
 output :
 ```
 minute               0 15 30 45
