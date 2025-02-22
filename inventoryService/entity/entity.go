@@ -1,10 +1,11 @@
 package entity
 
+import "time"
+
 type Product struct {
-	ID              int
-	Name            string
-	Quantity        int
-	BlockedQuantity int
+	ID       int
+	Name     string
+	Quantity int
 }
 
 type OrderItem struct {
@@ -27,4 +28,6 @@ type Order struct {
 	ID          int
 	OrderItems  []OrderItem
 	OrderStatus OrderStatus
+	Time        time.Time
+	Timer       *time.Timer
 }
