@@ -53,7 +53,6 @@ func (o *OrderService) PlaceOrder(order entity.Order) (int, error) {
 		return 0, err
 	}
 
-	// Schedule myFunction to run after the delay.
 	order.Timer = time.AfterFunc(time.Second, func() {
 		o.checkExpiry(orderId)
 	})
@@ -101,6 +100,12 @@ func (o *OrderService) CancelOrder(orderID int) error {
 	if err != nil {
 		return err
 	}
+
+	err = o.orderRepo.UpdateStatus(orderID, entity.OrderCancelled)
+	if err != nil {
+		return err
+	}
+
 	for _, orderItem := range order.OrderItems {
 		err = o.inventoryRepo.AddQuantity(orderItem.ProductID, orderItem.Quantity)
 		if err != nil {
@@ -108,10 +113,6 @@ func (o *OrderService) CancelOrder(orderID int) error {
 		}
 	}
 
-	err = o.orderRepo.UpdateStatus(orderID, entity.OrderCancelled)
-	if err != nil {
-		return err
-	}
 	return nil
 }
 
