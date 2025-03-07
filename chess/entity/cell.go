@@ -17,3 +17,7 @@ func (c *Cell) HasSamePieceType(piece *Piece) bool {
 func (c *Cell) Equals(cell *Cell) bool {
 	return c.X == cell.X && c.Y == cell.Y
 }
+
+func (c *Cell) IsEmpty() bool {
+	return c.Piece == nil
+}

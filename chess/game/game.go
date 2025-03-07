@@ -37,6 +37,7 @@ func (g *Game) MovePiece(x, y int, x1, y1 int) (bool, error) {
 
 	if g.isValidMove(fromCell, toCell) {
 		toCell.Piece = fromCell.Piece
+		toCell.Piece.Moves++
 		fromCell.Piece = nil
 		return true, nil
 	}
@@ -46,7 +47,7 @@ func (g *Game) MovePiece(x, y int, x1, y1 int) (bool, error) {
 
 func (g *Game) isValidMove(fromCell *entity.Cell, toCell *entity.Cell) bool {
 	for _, generator := range fromCell.Piece.MoveGenerator {
-		possibleCells := generator.GetPossibleMoves(g.Board, *fromCell)
+		possibleCells := generator.GetPossibleMoves(g.Board, fromCell)
 		for _, cell := range possibleCells {
 			if cell.Equals(toCell) {
 				return true

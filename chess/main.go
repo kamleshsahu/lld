@@ -43,16 +43,62 @@ func main() {
 	//} else {
 	//	fmt.Println(moved)
 	//}
-
-	whiteQueen := factory.GetPieceByType(entity.Queen, entity.White)
 	board := game.GetBoard()
+
+	whiteQueen := factory.GetPieceByType(entity.Queen, entity.White, *board)
 	cell, _ := board.GetCell(4, 4)
 	cell.Piece = &whiteQueen
-	moved, err := game.MovePiece(4, 4, 1, 2)
+	moved, err := game.MovePiece(4, 4, 1, 1)
 	if err != nil {
 		fmt.Println(err)
 	} else {
 		fmt.Println(moved)
 	}
 
+	pawn := factory.GetPieceByType(entity.Pawn, entity.White, *board)
+	cell, _ = board.GetCell(1, 1)
+	cell.Piece = &pawn
+	moved, err = game.MovePiece(cell.X, cell.Y, 1, 3)
+	if err != nil {
+		fmt.Println(err)
+	} else {
+		fmt.Println(moved)
+	}
+
+	moved, err = game.MovePiece(1, 3, 1, 4)
+	if err != nil {
+		fmt.Println(err)
+	} else {
+		fmt.Println(moved)
+	}
+
+	bpawn := factory.GetPieceByType(entity.Pawn, entity.Black, *board)
+	cell, _ = board.GetCell(1, 7)
+	cell.Piece = &bpawn
+	moved, err = game.MovePiece(cell.X, cell.Y, 1, 6)
+	if err != nil {
+		fmt.Println(err)
+	} else {
+		fmt.Println(moved)
+	}
+
+	moved, err = game.MovePiece(1, 6, 1, 5)
+	if err != nil {
+		fmt.Println(err)
+	} else {
+		fmt.Println(moved)
+	}
+	board.PrintBoard()
+
+	bknight := factory.GetPieceByType(entity.Knight, entity.Black, *board)
+	cell, _ = board.GetCell(6, 7)
+	cell.Piece = &bknight
+	moved, err = game.MovePiece(cell.X, cell.Y, 5, 5)
+	if err != nil {
+		fmt.Println(err)
+	} else {
+		fmt.Println(moved)
+	}
+
+	board.PrintBoard()
 }

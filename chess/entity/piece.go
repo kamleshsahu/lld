@@ -18,7 +18,13 @@ const (
 	King   PieceType = "king"
 )
 
+func (p Piece) String() string {
+	return string(p.PieceType)[0:1]
+}
+
 type Piece struct {
+	PieceType     PieceType
 	Color         Color
 	MoveGenerator []IMoveGenerator
+	Moves         int
 }
